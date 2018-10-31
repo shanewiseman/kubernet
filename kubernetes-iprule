@@ -1,0 +1,1 @@
+iptables -t nat -A DOCKER ! -i br-b2348904a950 -s 0.0.0.0/0 -d 0.0.0.0/0 -p tcp --dport 32768 -j DNAT --to-destination 10.192.0.2:8080

@@ -1,0 +1,126 @@
+spinnaker@hal-57f6b9bd9d-tjm6k:~$ kubectl config set-cluster default --server=https://kubernetes.default --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+Cluster "default" set.
+spinnaker@hal-57f6b9bd9d-tjm6k:~$ kubectl config set-context default --cluster=default
+Context "default" created.
+spinnaker@hal-57f6b9bd9d-tjm6k:~$ token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+spinnaker@hal-57f6b9bd9d-tjm6k:~$ kubectl config set-credentials user --token=$token
+User "user" set.
+spinnaker@hal-57f6b9bd9d-tjm6k:~$ kubectl config set-context default --user=user
+Context "default" modified.
+spinnaker@hal-57f6b9bd9d-tjm6k:~$ kubectl config use-context default
+Switched to context "default".
+spinnaker@hal-57f6b9bd9d-tjm6k:~$ curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                   Dload  Upload   Total   Spent    Left  Speed
+                                   100  7230  100  7230    0     0  57953      0 --:--:-- --:--:-- --:--:-- 58306
+                                   spinnaker@hal-57f6b9bd9d-tjm6k:~$ sed -i 's/\/usr\/local\/bin/\/home\/spinnaker/g' get_helm.sh
+                                   spinnaker@hal-57f6b9bd9d-tjm6k:~$ sed -i 's/sudo //g' get_helm.sh
+                                   spinnaker@hal-57f6b9bd9d-tjm6k:~$ export PATH=/home/spinnaker:$PATH
+                                   spinnaker@hal-57f6b9bd9d-tjm6k:~$ ls -al get_helm.sh
+                                   -rw-r--r-- 1 spinnaker spinnaker 7226 Oct 29 16:58 get_helm.sh
+                                   spinnaker@hal-57f6b9bd9d-tjm6k:~$ chmod +x get_helm.sh
+                                   spinnaker@hal-57f6b9bd9d-tjm6k:~$ ./get_helm.sh
+                                   Downloading https://kubernetes-helm.storage.googleapis.com/helm-v2.11.0-linux-amd64.tar.gz
+                                   Preparing to install helm and tiller into /home/spinnaker
+                                   helm installed into /home/spinnaker/helm
+                                   tiller installed into /home/spinnaker/tiller
+                                   Run 'helm init' to configure helm.
+
+
+
+
+spinnaker@hal-57f6b9bd9d-tjm6k:~$ helm init --service-account tiller --upgrade
+Creating /home/spinnaker/.helm
+Creating /home/spinnaker/.helm/repository
+Creating /home/spinnaker/.helm/repository/cache
+Creating /home/spinnaker/.helm/repository/local
+Creating /home/spinnaker/.helm/plugins
+Creating /home/spinnaker/.helm/starters
+Creating /home/spinnaker/.helm/cache/archive
+Creating /home/spinnaker/.helm/repository/repositories.yaml
+Adding stable repo with URL: https://kubernetes-charts.storage.googleapis.com
+Adding local repo with URL: http://127.0.0.1:8879/charts
+$HELM_HOME has been configured at /home/spinnaker/.helm.
+
+Tiller (the Helm server-side component) has been installed into your Kubernetes Cluster.
+
+Please note: by default, Tiller is deployed with an insecure 'allow unauthenticated users' policy.
+To prevent this, run `helm init` with the --tiller-tls-verify flag.
+For more information on securing your installation see: https://docs.helm.sh/using_helm/#securing-your-helm-installation
+Happy Helming!
+spinnaker@hal-57f6b9bd9d-tjm6k:~$ ADDRESS=index.docker.io
+spinnaker@hal-57f6b9bd9d-tjm6k:~$ REPOSITORIES=library/nginx
+spinnaker@hal-57f6b9bd9d-tjm6k:~$ hal config provider docker-registry enable
++ Get current deployment
+  Success
+  + Edit the dockerRegistry provider
+    Success
+    Problems in halconfig:
+    - WARNING There is a newer version of Halyard available (1.12.0),
+      please update when possible
+      ? Run 'sudo apt-get update && sudo apt-get install
+        spinnaker-halyard -y' to upgrade
+
+        Problems in default.provider.dockerRegistry:
+        - WARNING Provider dockerRegistry is enabled, but no accounts have
+          been configured.
+
+          + Successfully enabled dockerRegistry
+          spinnaker@hal-57f6b9bd9d-tjm6k:~$ hal config provider docker-registry account add my-docker-registry \
+          >    --address $ADDRESS \
+          >    --repositories $REPOSITORIES
+          + Get current deployment
+            Success
+            + Add the my-docker-registry account
+              Success
+              Problems in halconfig:
+              - WARNING There is a newer version of Halyard available (1.12.0),
+                please update when possible
+                ? Run 'sudo apt-get update && sudo apt-get install
+                  spinnaker-halyard -y' to upgrade
+
+                  + Successfully added account my-docker-registry for provider
+                    dockerRegistry.
+
+
+
+
+spinnaker@hal-57f6b9bd9d-tjm6k:~$ helm install mirantisworkloads/minio
+NAME:   honest-indri
+LAST DEPLOYED: Mon Oct 29 18:09:27 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+
+RESOURCES:
+==> v1/Secret
+NAME                AGE
+minio-honest-indri  1s
+
+==> v1/ConfigMap
+minio-honest-indri  1s
+
+==> v1/Service
+minio-svc-honest-indri  1s
+minio-honest-indri      1s
+
+==> v1beta1/StatefulSet
+minio-honest-indri  1s
+
+
+NOTES:
+Minio chart has been deployed.
+
+Internal URL:
+    minio: minio-honest-indri:9000
+
+    External URL:
+    Get the Minio URL by running these commands:
+        export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services minio-honest-indri)export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
+            echo http://$NODE_IP:$NODE_PORT
+
+
+
+
+
+
+
