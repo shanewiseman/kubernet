@@ -1,2 +1,4 @@
+#because of the "inception" layers do are not exposed by the outer container, need to set the NAT manually
+
 iptables -t nat -A DOCKER ! -i br-b2348904a950 -s 0.0.0.0/0 -d 0.0.0.0/0 -p tcp --dport 9000 -j DNAT --to-destination 10.244.2.10:9000
 iptables -A DOCKER ! -i br-b2348904a950 -o br-b2348904a950 -d 10.244.2.0/24 -p tcp --dport 9000 -j ACCEPT
